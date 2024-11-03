@@ -4,14 +4,15 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
  * WeChat Share for Typecho
  *
  * @package WeChatShare
- * @author Yuchao Huang
- * @version 2.0
- * @link https://hellochaos.cn
+ * @author vzhiying
+ * @version 3.1
+ * @link https://wanvfx.com
  *
  *
- * version 2.0 at 2021-03-29
+ * version 3.1 at 2025-11-03
  * 支持最新微信开放平台API
- * 
+ * 兼容旧版JsApi
+ * 支持自定义链接描述
  */
 class WeChatShare_Plugin  implements Typecho_Plugin_Interface
 {
@@ -20,7 +21,7 @@ class WeChatShare_Plugin  implements Typecho_Plugin_Interface
      * 插件版本号
      * @var string
      */
-    const _VERSION = '2.0';
+    const _VERSION = '3.1';
     /**
      * 激活插件方法,如果激活失败,直接抛出异常
      *
@@ -116,12 +117,12 @@ class WeChatShare_Plugin  implements Typecho_Plugin_Interface
 		
 		$description = '';$wx_title = '';$wx_description = '';$wx_url = '';$wx_image = '';
 		
-        if($cid_res) {
+    if ($cid_res && isset($match[1])) {//检查 $match[1] 是否存在
 			/** 取出数据 */
             $db = Typecho_Db::get();
             $prefix = $db->getPrefix();
-			$desc_res= $db->fetchAll($db->select()->from($prefix.'fields')->where('cid = ?', $match['1'])->where('name = ?', 'description'));
-            $wx_share= $db->fetchAll($db->select()->from($prefix.'wx_share')->where('cid = ?', $match['1']));
+        $desc_res = $db->fetchAll($db->select()->from($prefix . 'fields')->where('cid = ?', $match[1])->where('name = ?', 'description'));
+        $wx_share = $db->fetchAll($db->select()->from($prefix . 'wx_share')->where('cid = ?', $match[1]));
 			if($desc_res) {
 				$description = $desc_res[0]['str_value'];
 			}
@@ -133,7 +134,7 @@ class WeChatShare_Plugin  implements Typecho_Plugin_Interface
 			}
         }
 
-		$data = '<style>:-moz-placeholder {color: #E0E0E0; opacity:1;}::-moz-placeholder {color: #E0E0E0;opacity:1;}input:-ms-input-placeholder{color: #E0E0E0;opacity:1;}input::-webkit-input-placeholder{color: #E0E0E0;opacity:1;}</style><form id="wx_share" ><fieldset><legend>微信分享</legend><ol style="list-style-type:none;><li style="padding-bottom: 5px;"><label for="wx_title">标题：</label><input style="width: 80%" type="text" class="wx_title" value="'.$wx_title.'" name="wx_title" ></li><li style="padding-bottom: 5px;"><label for="wx_url">链接：</label><input type="text" style="width: 80%" value="'.$wx_url.'" name="wx_url"></li><li style="padding-bottom: 5px;display:block;"><span style="float:left" for="wx_describe">摘要：</span><textarea rows="4" class="wx_describe" name="wx_description" style="width: 80%"  >'.$wx_description.'</textarea></li><li style="padding-bottom: 5px;"><label for="wx_image">图标：</label><input type="text" class="wx_image"  value="'.$wx_image.'" style="width: 80%"  name="wx_image"></li></ol></fieldset><input type="hidden" name="cid" value="'.$match['1'].'"></form>';
+    $data = '<style>:-moz-placeholder {color: #E0E0E0; opacity:1;}::-moz-placeholder {color: #E0E0E0;opacity:1;}input:-ms-input-placeholder{color: #E0E0E0;opacity:1;}input::-webkit-input-placeholder{color: #E0E0E0;opacity:1;}</style><form id="wx_share" ><fieldset><legend>微信分享</legend><ol style="list-style-type:none;><li style="padding-bottom: 5px;"><label for="wx_title">标题：</label><input style="width: 80%" type="text" class="wx_title" value="' . $wx_title . '" name="wx_title" ></li><li style="padding-bottom: 5px;"><label for="wx_url">链接：</label><input type="text" style="width: 80%" value="' . $wx_url . '" name="wx_url"></li><li style="padding-bottom: 5px;display:block;"><span style="float:left" for="wx_describe">摘要：</span><textarea rows="4" class="wx_describe" name="wx_description" style="width: 80%"  >' . $wx_description . '</textarea></li><li style="padding-bottom: 5px;"><label for="wx_image">图标：</label><input type="text" class="wx_image"  value="' . $wx_image . '" style="width: 80%"  name="wx_image"></li></ol></fieldset><input type="hidden" name="cid" value="' . (isset($match[1]) ? $match[1] : '') . '"></form>';
 
         ?>
 
@@ -239,13 +240,6 @@ class WeChatShare_Plugin  implements Typecho_Plugin_Interface
 				    cid: '{$archive->cid}',
                     signature_url: '{$signature_url}'
                 };
-                
-                if(typeof pageInfo==="undefined") { 
-                    console.log("非pjac模式")
-                } else {
-                    formData = pageInfo
-                }
-
                 this.init = function(){
                     if( window.XMLHttpRequest ){
                         xhr = new XMLHttpRequest();
@@ -387,7 +381,7 @@ class WeChatShare_Plugin  implements Typecho_Plugin_Interface
 
             new WX_Custom_Share().init();
 			console.log("%c", "padding:100px 200px;line-height:220px;background:url('https://hiphotos.baidu.com/feed/pic/item/b999a9014c086e06606a9d0009087bf40bd1cbbf.jpg') no-repeat;");
-			console.log("%c WeChatShare v{$version}  %c By Yuchao Huang https://hellochaos.cn ","color:#444;background:#eee;padding:5px 0;","color:#eee;background:#444;padding:5px 0;");
+			console.log("%c WeChatShare v{$version}  %c By Yuchao Huang https://wanvfx.com ","color:#444;background:#eee;padding:5px 0;","color:#eee;background:#444;padding:5px 0;");
 SCRIPT;
 
         file_put_contents('usr/plugins/WeChatShare/wx_share.js',$wx_script);

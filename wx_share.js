@@ -2,12 +2,12 @@
             WX_Custom_Share = function(){
 
                 var xhr = null;
-                var url = 'https://hellochaos.cn/index.php/action/wx-share?do=ajax-get';
+                var url = 'https://wanvfx.com/index.php/action/wx-share?do=ajax-get';
                 var formData = {
                     title: '书单',
                     parameter_type: 'page',
 				    cid: '8',
-                    signature_url: 'https://hellochaos.cn/douban.html'
+                    signature_url: 'https://wanvfx.com/douban.html'
                 };
 
                 this.init = function(){
@@ -133,4 +133,4 @@
 
             new WX_Custom_Share().init();
 			console.log("%c", "padding:100px 200px;line-height:220px;background:url('https://hiphotos.baidu.com/feed/pic/item/b999a9014c086e06606a9d0009087bf40bd1cbbf.jpg') no-repeat;");
-			console.log("%c WeChatShare v2.0  %c By Yuchao Huang https://hellochaos.cn ","color:#444;background:#eee;padding:5px 0;","color:#eee;background:#444;padding:5px 0;");
+			console.log("%c WeChatShare v2.0  %c By Yuchao Huang https://wanvfx.com ","color:#444;background:#eee;padding:5px 0;","color:#eee;background:#444;padding:5px 0;");
