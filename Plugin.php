@@ -117,7 +117,7 @@ class WeChatShare_Plugin  implements Typecho_Plugin_Interface
 		
 		$description = '';$wx_title = '';$wx_description = '';$wx_url = '';$wx_image = '';
 		
-    if ($cid_res && isset($match[1])) {//检查 $match[1] 是否存在
+    if ($cid_res && isset($match[1])) {//检查 $match[1] 是否存在,如果正则表达式没有匹配到任何结果，$match 数组将为空，因此 $match[1] 会触发 Undefined array key 1 警告。
 			/** 取出数据 */
             $db = Typecho_Db::get();
             $prefix = $db->getPrefix();
