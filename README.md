@@ -1,28 +1,20 @@
 # Typecho微信分享插件 WeChatShare
-修改：Undefined array key
 
+修改记录：
 微信分享插件修改，原PHP7.4没问题，PHP8.0报错，在编辑页面提示Warning: Undefined array key
-
 具体来说，问题出现在以下代码段：
-
 $cid_res = preg_match('/cid=(\d+)/', $_SERVER['REQUEST_URI'], $match);
 如果正则表达式没有匹配到任何结果，$match 数组将为空，因此 $match[1] 会触发 Undefined array key 1 警告。
-
 为了兼容 PHP 8.0，可以在访问数组键之前进行检查，确保键存在。以下是修复后的代码：
-
-### 关键修改点
+# 关键修改点：
 
 1.  **检查 `$match[1]` 是否存在**：
-
     `if ($cid_res && isset($match[1])) {`
-
 2.  **在隐藏输入字段中使用三元运算符确保 `$match[1]` 存在**：
-
     `<input  type="hidden"  name="cid"  value="<?php  echo  isset($match[1])  ?  $match[1]  :  '';  ?>">`
-
 通过这些修改，代码在 PHP 8.0 中运行时将不再触发 `Undefined array key` 警告。
 
---------------以下为原介绍----------------
+##
 
 ## Overview
 
